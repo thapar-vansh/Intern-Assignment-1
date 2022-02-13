@@ -58,7 +58,33 @@ app.post('/register', async (req, res) => {
   }
 })
 
-app.get('/getPlayers', async (req, res) => {
+app.post('/login', auth.verifyUser, async (req, res) => {
+  const { username, password } = req.body
+  if (!username && !password) {
+    return res.status(400).send('Input is required')
+  } else {
+    db.query(
+      'SELECT id,password FROM users WHERE username = $1',
+      [username],
+      (err, result) => {
+        try {
+          if (bcrypt.compare(password, result.rows[0].password)) {
+            const userId = result.rows[0].id
+            const token = generateToken(userId)
+            console.log('Logged is successfully')
+            return res.status(200).send(token)
+          } else {
+            res.status(400).send('Invalid credentials')
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    )
+  }
+})
+
+app.get('/get/players', async (req, res) => {
   db.query('SELECT * FROM players', [], (err, result) => {
     try {
       if (result.rowCount > 0) {
@@ -73,7 +99,7 @@ app.get('/getPlayers', async (req, res) => {
   })
 })
 
-app.post('/addPlayers', auth.verifyAdmin, async (req, res) => {
+app.post('/add/players', auth.verifyAdmin, async (req, res) => {
   let { name, country } = req.body
   if (!name && !country) {
     return res.status(400).send('Input is required')
@@ -110,57 +136,7 @@ app.post('/addPlayers', auth.verifyAdmin, async (req, res) => {
   }
 })
 
-app.post('/addFavPlayers', auth.verifyUser, async (req, res) => {
-  const user_id = req.user.userId
-  let { player_id } = req.body
-  if (player_id == null) {
-    res.status(400).send('Input is required')
-  } else {
-    try {
-      db.query(
-        'INSERT INTO favourites (user_id, player_id) VALUES ($1,$2)',
-        [user_id, player_id],
-        (err, result) => {
-          if (err) {
-            console.log(err)
-          } else {
-            res.status(200).send('Added as favourite')
-          }
-        }
-      )
-    } catch (err) {
-      console.log(err)
-    }
-  }
-})
-
-app.post('/login', auth.verifyUser, async (req, res) => {
-  const { username, password } = req.body
-  if (!username && !password) {
-    return res.status(400).send('Input is required')
-  } else {
-    db.query(
-      'SELECT id,password FROM users WHERE username = $1',
-      [username],
-      (err, result) => {
-        try {
-          if (bcrypt.compare(password, result.rows[0].password)) {
-            const userId = result.rows[0].id
-            const token = generateToken(userId)
-            console.log('Logged is successfully')
-            return res.status(200).send(token)
-          } else {
-            res.status(400).send('Invalid credentials')
-          }
-        } catch (err) {
-          console.log(err)
-        }
-      }
-    )
-  }
-})
-
-app.post('/updatePlayers', auth.verifyAdmin, async (req, res) => {
+app.post('/update/players', auth.verifyAdmin, async (req, res) => {
   let { name, country, id } = req.body
   if (!name && !country && !id) {
     return res.status(400).send('Input is required')
@@ -184,26 +160,7 @@ app.post('/updatePlayers', auth.verifyAdmin, async (req, res) => {
   }
 })
 
-app.get('/getFavPlayers', auth.verifyUser, async (req, res) => {
-  const userId = req.user.userId
-  db.query(
-    'SELECT player_id from favourites WHERE user_id = $1',
-    [userId],
-    (req, result) => {
-      try {
-        if (result.rowCount > 0) {
-          res.send(result.rows)
-        } else {
-          res.send('No favourites found')
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  )
-})
-
-app.post('/deletePlayers', auth.verifyAdmin, async (req, res) => {
+app.post('/delete/players', auth.verifyAdmin, async (req, res) => {
   const { id } = req.body
   if (!id) {
     return res.status(400).send('Input is required')
@@ -224,7 +181,50 @@ app.post('/deletePlayers', auth.verifyAdmin, async (req, res) => {
   }
 })
 
-app.delete('/deleteFavPlayers', auth.verifyUser, async (req, res) => {
+app.post('/add/fav/players', auth.verifyUser, async (req, res) => {
+  const user_id = req.user.userId
+  let { player_id } = req.body
+  if (player_id == null) {
+    res.status(400).send('Input is required')
+  } else {
+    try {
+      db.query(
+        'INSERT INTO favourites (user_id, player_id) VALUES ($1,$2)',
+        [user_id, player_id],
+        (err, result) => {
+          if (err) {
+            console.log(err)
+          } else {
+            res.status(200).send('Added as favourite')
+          }
+        }
+      )
+    } catch (err) {
+      console.log(err)
+    }
+  }
+})
+
+app.get('/get/fav/players', auth.verifyUser, async (req, res) => {
+  const userId = req.user.userId
+  db.query(
+    'SELECT player_id from favourites WHERE user_id = $1',
+    [userId],
+    (req, result) => {
+      try {
+        if (result.rowCount > 0) {
+          res.send(result.rows)
+        } else {
+          res.send('No favourites found')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  )
+})
+
+app.delete('/delete/fav/players', auth.verifyUser, async (req, res) => {
   const user_id = req.user.userId
   const { player_id } = req.body
   if (!player_id) {
@@ -235,7 +235,7 @@ app.delete('/deleteFavPlayers', auth.verifyUser, async (req, res) => {
       'SELECT * FROM favourites WHERE user_id = $1',
       [user_id],
       (err, result) => {
-       if (result.rowCount > 0) {
+        if (result.rowCount > 0) {
           db.query(
             'DELETE FROM favourites WHERE player_id  = $1',
             [player_id],
