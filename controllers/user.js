@@ -26,21 +26,23 @@ async function addFavPlayers(req, res) {
 
 async function getFavPlayers(req, res) {
   const userId = req.user.userId
-  db.query(
-    'SELECT player_id from favourites WHERE user_id = $1',
-    [userId],
-    (req, result) => {
-      try {
-        if (result.rowCount > 0) {
-          res.send(result.rows)
+  try {
+    db.query(
+      'SELECT player_id,name,country FROM favourites fv JOIN players pl ON pl.id = fv.player_id WHERE user_id = $1',
+      [userId],
+      (err, response) => {
+        if (err) {
+          console.log(err)
+        } else if (response.rowCount > 0) {
+          res.send(response.rows)
         } else {
           res.send('No favourites found')
         }
-      } catch (err) {
-        console.log(err)
       }
-    }
-  )
+    )
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 async function deleteFavPlayers(req, res) {
