@@ -1,81 +1,49 @@
-import db from '../util/database.js'
+import adminServices from '../services/adminServices.js'
+import userServices from '../services/userServices.js'
 
-async function addFavPlayers(req, res) {
-  const user_id = req.user.userId
-  let { player_id } = req.body
-  if (player_id == null) {
-    res.status(400).send('Input is required')
-  } else {
-    try {
-      db.query(
-        'INSERT INTO favourites (user_id, player_id) VALUES ($1,$2)',
-        [user_id, player_id],
-        (err, result) => {
-          if (err) {
-            console.log(err)
-          } else {
-            res.status(200).send('Added as favourite')
-          }
-        }
-      )
-    } catch (err) {
-      console.log(err)
+const addFavPlayers = async (req, res) => {
+  const userId = req.user.userId
+  const { id } = req.body
+  try {
+    const player = await adminServices.getPlayerByIdService(id)
+    if (player === null) {
+      res.send('Player not found')
+    } else {
+      await userServices.addFavPlayerService(userId, id)
+      res.send('Added as favourite')
     }
+  } catch {
+    throw new Error('Error adding as favourite player')
   }
 }
 
-async function getFavPlayers(req, res) {
+const getFavPlayers = async (req, res) => {
   const userId = req.user.userId
   try {
-    db.query(
-      'SELECT player_id,name,country FROM favourites fv JOIN players pl ON pl.id = fv.player_id WHERE user_id = $1',
-      [userId],
-      (err, response) => {
-        if (err) {
-          console.log(err)
-        } else if (response.rowCount > 0) {
-          res.send(response.rows)
-        } else {
-          res.send('No favourites found')
-        }
-      }
-    )
-  } catch (err) {
-    console.log(err)
+    const favPlayer = await userServices.getFavPlayerService(userId)
+    if (favPlayer === null) {
+      res.send('No favourites found')
+    } else {
+      res.send(favPlayer)
+    }
+  } catch {
+    throw new Error('Error retrieving favourite players')
   }
 }
 
-async function deleteFavPlayers(req, res) {
-  const user_id = req.user.userId
-  const { player_id } = req.body
-  if (!player_id) {
-    return res.status(400).send('Input is required')
-  }
+const deleteFavPlayers = async (req, res) => {
+  const userId = req.user.userId
+  const { id } = req.body
   try {
-    db.query(
-      'SELECT * FROM favourites WHERE user_id = $1',
-      [user_id],
-      (err, result) => {
-        if (result.rowCount > 0) {
-          db.query(
-            'DELETE FROM favourites WHERE player_id  = $1',
-            [player_id],
-            (err, response) => {
-              if (err) {
-                console.log(err)
-                res.status(400).send()
-              } else {
-                res.status(200).send('Favourite player deleted successfully')
-              }
-            }
-          )
-        } else {
-          res.status(404).send('No players in favourite list')
-        }
-      }
-    )
-  } catch (err) {
-    console.log(err)
+    const favPlayer = await userServices.getAllFavPlayerService(userId)
+    if (favPlayer === null) {
+      res.send('No favourites found')
+    } else {
+      await userServices.deleteFavPlayerService(id, userId)
+      res.send('Favourite player deleted successfully')
+    }
+  } catch {
+    throw new Error('Error deleting favourite player')
   }
 }
 

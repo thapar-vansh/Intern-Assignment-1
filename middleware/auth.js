@@ -7,7 +7,7 @@ app.use(bodyParser.json())
 
 const config = process.env
 
-const verifyUser = (req, res, next) => {
+const verifyUser = async (req, res, next) => {
   const token = req.headers['admintoken']
   if (!token) {
     return res.status(403).send('Token is required for authentication')
@@ -20,7 +20,7 @@ const verifyUser = (req, res, next) => {
   }
   next()
 }
-const verifyAdmin = (req, res, next) => {
+const verifyAdmin = (req, res,next) => {
   const headers = req.headers
   try {
     if (
@@ -28,7 +28,6 @@ const verifyAdmin = (req, res, next) => {
       headers.password === config.PASSWORD
     ) {
       res.status(200)
-      return next()
     } else {
       res.status(400).send('You are not authenticated')
     }
@@ -36,6 +35,7 @@ const verifyAdmin = (req, res, next) => {
     console.log(err)
     return res.status(401).send('Invalid credentials')
   }
+  next()
 }
 
 export default {
