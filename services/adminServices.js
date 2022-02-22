@@ -1,64 +1,48 @@
-import db from '../util/database.js'
+import playersDb from '../database/players.db.js'
 
 const addPlayerService = async (name, country) => {
   try {
-    await db.query(
-      `INSERT INTO players (name,country)
-      VALUES ($1,$2)`,
-      [name, country]
-    )
-  } catch {
+    await playersDb.addPlayerToDb(name, country)
+  } catch (e) {
+    console.log(e)
     throw new Error('Error adding new player')
   }
 }
 
 const updatePlayerService = async (id, name, country) => {
   try {
-    await db.query(
-      `UPDATE players
-      SET name = $2, country = $3 
-      WHERE id = $1`,
-      [id, name, country]
-    )
-  } catch {
+    await playersDb.updatePlayerToDb(id, name, country)
+  } catch (e) {
+    console.log(e)
     throw new Error('Error updating player')
   }
 }
 
 const deletePlayerService = async (id) => {
   try {
-    await db.query(
-      `DELETE FROM players
-      WHERE id = $1`,
-      [id]
-    )
-  } catch {
+    await playersDb.deletePlayerFromDb(id)
+  } catch (e) {
+    console.log(e)
     throw new Error('Error deleting player')
   }
 }
 
 const getPlayerByNameService = async (name) => {
   try {
-    const player = await db.query(
-      `SELECT * FROM players
-      WHERE name = $1`,
-      [name]
-    )
-    return player.rowCount > 0 ? player.rows[0] : null
-  } catch {
+    const playerByName = await playersDb.getPlayerByNameFromDb(name)
+    return playerByName
+  } catch (e) {
+    console.log(e)
     throw new Error('Error getting players')
   }
 }
 
 const getPlayerByIdService = async (id) => {
   try {
-    const player = await db.query(
-      `SELECT * FROM players
-      WHERE id = $1`,
-      [id]
-    )
-    return player.rowCount > 0 ? player.rows[0] : null
-  } catch {
+    const playerById = await playersDb.getPlayerByIdFromDb(id)
+    return playerById
+  } catch (e) {
+    console.log(e)
     throw new Error('Error getting players')
   }
 }

@@ -6,13 +6,14 @@ const addFavPlayers = async (req, res) => {
   const { id } = req.body
   try {
     const player = await adminServices.getPlayerByIdService(id)
-    if (player === null) {
+    if (player && player.length === 0) {
       res.send('Player not found')
     } else {
       await userServices.addFavPlayerService(userId, id)
       res.send('Added as favourite')
     }
-  } catch {
+  } catch (e) {
+    console.log
     throw new Error('Error adding as favourite player')
   }
 }
@@ -21,12 +22,13 @@ const getFavPlayers = async (req, res) => {
   const userId = req.user.userId
   try {
     const favPlayer = await userServices.getFavPlayerService(userId)
-    if (favPlayer === null) {
+    if (favPlayer && favPlayer.length === 0) {
       res.send('No favourites found')
     } else {
       res.send(favPlayer)
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error retrieving favourite players')
   }
 }
@@ -35,14 +37,15 @@ const deleteFavPlayers = async (req, res) => {
   const userId = req.user.userId
   const { id } = req.body
   try {
-    const favPlayer = await userServices.getAllFavPlayerService(userId)
-    if (favPlayer === null) {
+    const favPlayer = await userServices.getFavPlayerService(userId)
+    if (favPlayer && favPlayer.length === 0) {
       res.send('No favourites found')
     } else {
       await userServices.deleteFavPlayerService(id, userId)
       res.send('Favourite player deleted successfully')
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error deleting favourite player')
   }
 }

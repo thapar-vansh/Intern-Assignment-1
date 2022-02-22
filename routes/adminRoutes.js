@@ -5,10 +5,10 @@ import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
-router.post('/add/players', auth.verifyAdmin,adminControllers.addPlayers)
+router.post('/add/players', auth.verifyAdmin, adminControllers.addPlayers)
 
-router.post('/update/players', auth.verifyAdmin,adminControllers.updatePlayers)
+router.post('/update/players', auth.verifyAdmin, adminControllers.updatePlayers)
 
-router.post('/delete/players', auth.verifyAdmin,adminControllers.deletePlayers)
+router.post('/delete/players', auth.verifyAdmin, adminControllers.deletePlayers)
 
 export default router

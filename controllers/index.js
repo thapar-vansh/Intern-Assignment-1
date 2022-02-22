@@ -7,7 +7,8 @@ const getPlayers = async (req, res) => {
   try {
     const result = await indexServices.getPlayersService()
     res.send(result)
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error getting players')
   }
 }
@@ -21,7 +22,8 @@ const register = async (req, res) => {
     } else {
       res.send('Registered successfully')
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error getting players')
   }
 }
@@ -37,7 +39,8 @@ const login = async (req, res) => {
     } else {
       res.send(result)
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error logging for user')
   }
 }

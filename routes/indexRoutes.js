@@ -5,10 +5,9 @@ import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
-
 router.post('/register', indexControllers.register)
 
-router.post('/login', auth.verifyUser,indexControllers.login)
+router.post('/login', auth.verifyUser, indexControllers.login)
 
 router.get('/players', indexControllers.getPlayers)
 

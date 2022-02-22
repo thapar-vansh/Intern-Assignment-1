@@ -1,15 +1,17 @@
-import db from '../util/database.js'
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
+import playersDb from '../database/players.db.js'
+import usersDb from '../database/users.db.js'
 
 dotenv.config()
 
 const getPlayersService = async () => {
   try {
-    const players = await db.query(`SELECT * FROM players`, [])
-    return players.rowCount > 0 ? players.rows : []
-  } catch {
+    const players = await playersDb.getAllPlayers()
+    return players
+  } catch (e) {
+    console.log(e)
     throw new Error('Error getting players')
   }
 }
@@ -17,35 +19,24 @@ const getPlayersService = async () => {
 const registerService = async (username, password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10)
-    const player = await db.query(
-      `SELECT * FROM users
-      WHERE username = $1`,
-      [username]
-    )
-    if (player.rowCount > 0) {
+    const user = await usersDb.getUserbyUsername(username)
+    if (user && user.length > 0) {
       return true
     } else {
-      await db.query(
-        `INSERT INTO users
-        (username, password) VALUES ($1,$2)`,
-        [username, hashedPassword]
-      )
+      await usersDb.addUserToDb(username, hashedPassword)
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error registering')
   }
 }
 
 const loginService = async (username, password) => {
   try {
-    const loginResult = await db.query(
-      `SELECT id,password FROM users
-      WHERE username = $1`,
-      [username]
-    )
-    if (loginResult.rowCount > 0) {
-      if (await bcrypt.compare(password, loginResult.rows[0].password)) {
-        const userId = loginResult.rows[0].id
+    const loginResult = await usersDb.loginUser(username, password)
+    if (loginResult.length > 0) {
+      if (await bcrypt.compare(password, loginResult[0].password)) {
+        const userId = loginResult[0].id
         const token = generateToken(userId)
         return token
       } else {
@@ -54,7 +45,8 @@ const loginService = async (username, password) => {
     } else {
       return false
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error('Error logging in')
   }
 }

@@ -20,7 +20,7 @@ const verifyUser = async (req, res, next) => {
   }
   next()
 }
-const verifyAdmin = (req, res,next) => {
+const verifyAdmin = (req, res, next) => {
   const headers = req.headers
   try {
     if (
