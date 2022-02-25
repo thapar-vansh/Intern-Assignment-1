@@ -1,14 +1,17 @@
 import express from 'express'
 
-import adminControllers from '../controllers/admin.js'
-import auth from '../middleware/auth.js'
+import {
+  addPlayers,
+  updatePlayers,
+  deletePlayers,
+} from '../controllers/admin.js'
+import { verifyAdmin } from '../middleware/auth.js'
 
-const router = express.Router()
+export const router = express.Router() 
 
-router.post('/add/players', auth.verifyAdmin, adminControllers.addPlayers)
+router.post('/add/players', verifyAdmin, addPlayers)
 
-router.post('/update/players', auth.verifyAdmin, adminControllers.updatePlayers)
+router.post('/update/players', verifyAdmin, updatePlayers)
 
-router.post('/delete/players', auth.verifyAdmin, adminControllers.deletePlayers)
+router.post('/delete/players', verifyAdmin, deletePlayers)
 
-export default router

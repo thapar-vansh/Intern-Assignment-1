@@ -1,55 +1,52 @@
-import adminServices from '../services/adminServices.js'
+import {
+  addPlayerService,
+  getPlayerByNameService,
+  updatePlayerService,
+  getPlayerByIdService,
+  deletePlayerService,
+} from '../services/adminServices.js'
 
-const addPlayers = async (req, res) => {
+export const addPlayers = async (req, res) => {
   const { name, country } = req.body
   try {
-    const player = await adminServices.getPlayerByNameService(name)
+    const player = await getPlayerByNameService(name)
     if (player && player.length === 0) {
-      await adminServices.addPlayerService(name, country)
-      res.send('Player added')
-    } else {
-      res.send('Player already exists')
+      await addPlayerService(name, country)
+      return res.send('Player added')
     }
+    res.status(409).send('Player already exists')
+    throw new Error('Error adding new player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error adding new player')
   }
 }
 
-const updatePlayers = async (req, res) => {
+export const updatePlayers = async (req, res) => {
   const { id, name, country } = req.body
   try {
-    const player = await adminServices.getPlayerByIdService(id)
+    const player = await getPlayerByIdService(id)
     if (player && player.length === 0) {
-      res.send('Player not found')
-    } else {
-      await adminServices.updatePlayerService(id, name, country)
-      res.send('Updated player successfully')
+      return res.status(404).send('Player not found')
     }
+    await updatePlayerService(id, name, country)
+    res.send('Updated player successfully')
+    throw new Error('Error updating player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error updating player')
   }
 }
 
-const deletePlayers = async (req, res) => {
+export const deletePlayers = async (req, res) => {
   const { id } = req.body
   try {
-    const player = await adminServices.getPlayerByIdService(id)
+    const player = await getPlayerByIdService(id)
     if (player && player.length === 0) {
-      res.send('No player found to delete')
-    } else {
-      await adminServices.deletePlayerService(id)
-      res.send('Player deleted successfully')
+      return res.status(404).send('No player found to delete')
     }
+    await deletePlayerService(id)
+    res.send('Player deleted successfully')
+    throw new Error('Error deleting player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error deleting player')
   }
-}
-
-export default {
-  addPlayers: addPlayers,
-  updatePlayers: updatePlayers,
-  deletePlayers: deletePlayers,
 }

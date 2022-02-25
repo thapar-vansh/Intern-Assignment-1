@@ -1,14 +1,14 @@
 import express from 'express'
 
-import indexControllers from '../controllers/index.js'
-import auth from '../middleware/auth.js'
+import { register, login, getPlayers } from '../controllers/index.js'
+import { verifyUser } from '../middleware/auth.js'
 
-const router = express.Router()
+export const router = express.Router()
 
-router.post('/register', indexControllers.register)
+router.post('/register', register)
 
-router.post('/login', auth.verifyUser, indexControllers.login)
+router.post('/login', verifyUser, login)
 
-router.get('/players', indexControllers.getPlayers)
+router.get('/players', getPlayers)
 
-export default router
+

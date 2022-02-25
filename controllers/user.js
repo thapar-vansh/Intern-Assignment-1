@@ -1,57 +1,53 @@
-import adminServices from '../services/adminServices.js'
-import userServices from '../services/userServices.js'
+import { getPlayerByIdService } from '../services/adminServices.js'
+import {
+  addFavPlayerService,
+  getFavPlayerService,
+  deleteFavPlayerService,
+} from '../services/userServices.js'
 
-const addFavPlayers = async (req, res) => {
+export const addFavPlayers = async (req, res) => {
   const userId = req.user.userId
   const { id } = req.body
   try {
-    const player = await adminServices.getPlayerByIdService(id)
+    const player = await getPlayerByIdService(id)
     if (player && player.length === 0) {
-      res.send('Player not found')
-    } else {
-      await userServices.addFavPlayerService(userId, id)
-      res.send('Added as favourite')
+      return res.status(404).send('Player not found')
     }
-  } catch (e) {
-    console.log
-    throw new Error('Error adding as favourite player')
-  }
-}
+    await addFavPlayerService(userId, id)
+    res.send('Added as favourite')
 
-const getFavPlayers = async (req, res) => {
-  const userId = req.user.userId
-  try {
-    const favPlayer = await userServices.getFavPlayerService(userId)
-    if (favPlayer && favPlayer.length === 0) {
-      res.send('No favourites found')
-    } else {
-      res.send(favPlayer)
-    }
+    throw new Error('Error adding as favourite player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error retrieving favourite players')
   }
 }
 
-const deleteFavPlayers = async (req, res) => {
+export const getFavPlayers = async (req, res) => {
+  const userId = req.user.userId
+  try {
+    const favPlayer = await getFavPlayerService(userId)
+    if (favPlayer && favPlayer.length === 0) {
+      return res.status(404).send('No favourites found')
+    }
+    res.send(favPlayer)
+    throw new Error('Error retrieving favourite players')
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const deleteFavPlayers = async (req, res) => {
   const userId = req.user.userId
   const { id } = req.body
   try {
-    const favPlayer = await userServices.getFavPlayerService(userId)
+    const favPlayer = await getFavPlayerService(userId)
     if (favPlayer && favPlayer.length === 0) {
-      res.send('No favourites found')
-    } else {
-      await userServices.deleteFavPlayerService(id, userId)
-      res.send('Favourite player deleted successfully')
+      res.status(404).send('No favourites found')
     }
+    await deleteFavPlayerService(id, userId)
+    res.send('Favourite player deleted successfully')
+    throw new Error('Error deleting favourite player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error deleting favourite player')
   }
-}
-
-export default {
-  addFavPlayers: addFavPlayers,
-  getFavPlayers: getFavPlayers,
-  deleteFavPlayers: deleteFavPlayers,
 }

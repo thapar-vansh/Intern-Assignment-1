@@ -15,7 +15,7 @@ const CONFIG = {
 
 const pool = new Pool(CONFIG)
 
-const query = async (text, params) => {
+export const query = async (text, params) => {
   return new Promise((resolve, reject) => {
     try {
       const result = pool.query(text, params)
@@ -26,6 +26,4 @@ const query = async (text, params) => {
   })
 }
 
-export default {
-  query: query,
-}
+

@@ -1,33 +1,36 @@
-import db from '../util/database.js'
+import { query } from '../util/database.js'
 
-const getUserbyUsername = async (username) => {
-  const user = await db.query(
+export const getUserbyUsername = async (username) => {
+  const user = await query(
     `SELECT * FROM users
-        WHERE username = $1`,
+    WHERE username = $1`,
     [username]
   )
   return user.rowCount > 0 ? user.rows : []
 }
 
-const addUserToDb = async (username, hashedPassword) => {
-  await db.query(
+export const addUserToDb = async (username, hashedPassword) => {
+  await query(
     `INSERT INTO users
-        (username, password) VALUES ($1,$2)`,
+    (username, password) VALUES ($1,$2)`,
     [username, hashedPassword]
   )
 }
 
-const loginUser = async (username) => {
-  const loginDetails = await db.query(
+export const loginUser = async (username) => {
+  const loginDetails = await query(
     `SELECT id,password FROM users
-        WHERE username = $1`,
+    WHERE username = $1`,
     [username]
   )
   return loginDetails.rowCount > 0 ? loginDetails.rows : []
 }
 
-export default {
-  getUserbyUsername: getUserbyUsername,
-  addUserToDb: addUserToDb,
-  loginUser: loginUser,
+export const checkUser = async (userId) => {
+  const userDetails = await query(
+    `SELECT * FROM users
+    WHERE id = $1`,
+    [userId]
+  )
+  return userDetails.rowCount > 0 ? userDetails.rows : []
 }

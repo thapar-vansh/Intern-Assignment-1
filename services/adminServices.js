@@ -1,35 +1,41 @@
-import playersDb from '../database/players.db.js'
+import {
+  addPlayerToDb,
+  updatePlayerToDb,
+  deletePlayerFromDb,
+  getPlayerByNameFromDb,
+  getPlayerByIdFromDb,
+} from '../database/players.db.js'
 
-const addPlayerService = async (name, country) => {
+export const addPlayerService = async (name, country) => {
   try {
-    await playersDb.addPlayerToDb(name, country)
-  } catch (e) {
-    console.log(e)
+    await addPlayerToDb(name, country)
     throw new Error('Error adding new player')
-  }
-}
-
-const updatePlayerService = async (id, name, country) => {
-  try {
-    await playersDb.updatePlayerToDb(id, name, country)
   } catch (e) {
     console.log(e)
-    throw new Error('Error updating player')
   }
 }
 
-const deletePlayerService = async (id) => {
+export const updatePlayerService = async (id, name, country) => {
   try {
-    await playersDb.deletePlayerFromDb(id)
+    await updatePlayerToDb(id, name, country)
+    throw new Error('Error updating player')
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const deletePlayerService = async (id) => {
+  try {
+    await deletePlayerFromDb(id)
   } catch (e) {
     console.log(e)
     throw new Error('Error deleting player')
   }
 }
 
-const getPlayerByNameService = async (name) => {
+export const getPlayerByNameService = async (name) => {
   try {
-    const playerByName = await playersDb.getPlayerByNameFromDb(name)
+    const playerByName = await getPlayerByNameFromDb(name)
     return playerByName
   } catch (e) {
     console.log(e)
@@ -37,9 +43,9 @@ const getPlayerByNameService = async (name) => {
   }
 }
 
-const getPlayerByIdService = async (id) => {
+export const getPlayerByIdService = async (id) => {
   try {
-    const playerById = await playersDb.getPlayerByIdFromDb(id)
+    const playerById = await getPlayerByIdFromDb(id)
     return playerById
   } catch (e) {
     console.log(e)
@@ -47,10 +53,4 @@ const getPlayerByIdService = async (id) => {
   }
 }
 
-export default {
-  addPlayerService: addPlayerService,
-  getPlayerByNameService: getPlayerByNameService,
-  updatePlayerService: updatePlayerService,
-  getPlayerByIdService: getPlayerByIdService,
-  deletePlayerService: deletePlayerService,
-}
+

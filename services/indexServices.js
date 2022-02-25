@@ -1,14 +1,16 @@
 import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
-import playersDb from '../database/players.db.js'
-import usersDb from '../database/users.db.js'
+import { getAllPlayers } from '../database/players.db.js'
+import {
+  getUserbyUsername,
+  addUserToDb,
+  loginUser,
+  checkUser,
+} from '../database/users.db.js'
 
-dotenv.config()
-
-const getPlayersService = async () => {
+export const getPlayersService = async () => {
   try {
-    const players = await playersDb.getAllPlayers()
+    const players = await getAllPlayers()
     return players
   } catch (e) {
     console.log(e)
@@ -16,38 +18,38 @@ const getPlayersService = async () => {
   }
 }
 
-const registerService = async (username, password) => {
+export const registerService = async (username, password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await usersDb.getUserbyUsername(username)
+    const user = await getUserbyUsername(username)
     if (user && user.length > 0) {
       return true
-    } else {
-      await usersDb.addUserToDb(username, hashedPassword)
     }
+    await addUserToDb(username, hashedPassword)
+    throw new Error('Error registering')
   } catch (e) {
     console.log(e)
-    throw new Error('Error registering')
   }
 }
 
-const loginService = async (username, password) => {
+export const loginService = async (username, password, req, res) => {
+  const userId = req.user.userId
+  const loginResult = await loginUser(username, password)
+  const user = await checkUser(userId)
   try {
-    const loginResult = await usersDb.loginUser(username, password)
-    if (loginResult.length > 0) {
+    if (loginResult && loginResult.length > 0 && user && user.length) {
       if (await bcrypt.compare(password, loginResult[0].password)) {
         const userId = loginResult[0].id
         const token = generateToken(userId)
-        return token
+        return res.send(token)
       } else {
-        return 0
+        return res.status(403).send('Invalid credentials')
       }
     } else {
-      return false
+      return res.status(404).send('User does not exists')
     }
   } catch (e) {
     console.log(e)
-    throw new Error('Error logging in')
   }
 }
 
@@ -61,8 +63,4 @@ function generateToken(userId) {
   return token
 }
 
-export default {
-  getPlayersService: getPlayersService,
-  registerService: registerService,
-  loginService: loginService,
-}
+

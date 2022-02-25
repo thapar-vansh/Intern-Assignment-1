@@ -2,9 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 
-import indexRoutes from './routes/indexRoutes.js'
-import adminRoutes from './routes/adminRoutes.js'
-import userRoutes from './routes/userRoutes.js'
+import { router as indexRoutes } from './routes/indexRoutes.js'
+import { router as adminRoutes } from './routes/adminRoutes.js'
+import { router as userRoutes } from './routes/userRoutes.js'
 
 dotenv.config()
 

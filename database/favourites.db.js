@@ -1,7 +1,7 @@
-import db from '../util/database.js'
+import { query } from '../util/database.js'
 
-const addFavPlayerToDb = async (userId, id) => {
-  await db.query(
+export const addFavPlayerToDb = async (userId, id) => {
+  await query(
     `INSERT INTO favourites 
         (user_id, player_id)
         VALUES ($1,$2)`,
@@ -9,8 +9,8 @@ const addFavPlayerToDb = async (userId, id) => {
   )
 }
 
-const getFavPlayersFromDb = async (userId) => {
-  const favPlayers = await db.query(
+export const getFavPlayersFromDb = async (userId) => {
+  const favPlayers = await query(
     `SELECT player_id,name,country
           FROM favourites fv JOIN players pl
           ON pl.id = fv.player_id 
@@ -20,17 +20,11 @@ const getFavPlayersFromDb = async (userId) => {
   return favPlayers.rowCount > 0 ? favPlayers.rows : []
 }
 
-const deleteFavPlayerFromDb = async (id, userId) => {
-  await db.query(
+export const deleteFavPlayerFromDb = async (id, userId) => {
+  await query(
     `DELETE FROM favourites
         WHERE player_id  = $1 
         AND user_id = $2`,
     [id, userId]
   )
-}
-
-export default {
-  addFavPlayerToDb: addFavPlayerToDb,
-  getFavPlayersFromDb: getFavPlayersFromDb,
-  deleteFavPlayerFromDb: deleteFavPlayerFromDb,
 }

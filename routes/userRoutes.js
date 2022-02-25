@@ -1,14 +1,17 @@
 import express from 'express'
 
-import userControllers from '../controllers/user.js'
-import auth from '../middleware/auth.js'
+import {
+  addFavPlayers,
+  getFavPlayers,
+  deleteFavPlayers,
+} from '../controllers/user.js'
+import { verifyUser } from '../middleware/auth.js'
 
-const router = express.Router()
+export const router = express.Router()
 
-router.post('/add/fav/players', auth.verifyUser, userControllers.addFavPlayers)
+router.post('/add/fav/players', verifyUser, addFavPlayers)
 
-router.get('/get/fav/players', auth.verifyUser, userControllers.getFavPlayers)
+router.get('/get/fav/players', verifyUser, getFavPlayers)
 
-router.post('/delete/fav/players', auth.verifyUser, userControllers.deleteFavPlayers)
+router.post('/delete/fav/players', verifyUser, deleteFavPlayers)
 
-export default router

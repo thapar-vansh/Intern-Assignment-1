@@ -1,17 +1,22 @@
-import favouritesDb from '../database/favourites.db.js'
+import {
+  addFavPlayerToDb,
+  getFavPlayersFromDb,
+  deleteFavPlayerFromDb,
+} from '../database/favourites.db.js'
+import { checkUser } from '../database/users.db.js'
 
-const addFavPlayerService = async (userId, id) => {
+export const addFavPlayerService = async (userId, id) => {
   try {
-    await favouritesDb.addFavPlayerToDb(userId, id)
+    await addFavPlayerToDb(userId, id)
+    throw new Error('Error adding as favourite player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error adding as favourite player')
   }
 }
 
-const getFavPlayerService = async (userId) => {
+export const getFavPlayerService = async (userId) => {
   try {
-    const favPlayers = await favouritesDb.getFavPlayersFromDb(userId)
+    const favPlayers = await getFavPlayersFromDb(userId)
     return favPlayers
   } catch (e) {
     console.log(e)
@@ -19,17 +24,21 @@ const getFavPlayerService = async (userId) => {
   }
 }
 
-const deleteFavPlayerService = async (id, userId) => {
+export const deleteFavPlayerService = async (id, userId) => {
   try {
-    await favouritesDb.deleteFavPlayerFromDb(id, userId)
+    await deleteFavPlayerFromDb(id, userId)
+    throw new Error('Error deleting favourite player')
   } catch (e) {
     console.log(e)
-    throw new Error('Error deleting favourite player')
   }
 }
 
-export default {
-  addFavPlayerService: addFavPlayerService,
-  getFavPlayerService: getFavPlayerService,
-  deleteFavPlayerService: deleteFavPlayerService,
+export const getUsersService = async (userId) => {
+  const user = await checkUser(userId)
+  if (user && user.length > 0) {
+    return res.send('User exists in database')
+  }
+  return res.status(400).send('Unknown user')
 }
+
+

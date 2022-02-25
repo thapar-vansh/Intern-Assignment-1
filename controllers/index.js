@@ -1,52 +1,38 @@
-import dotenv from 'dotenv'
-import indexServices from '../services/indexServices.js'
+import {
+  getPlayersService,
+  registerService,
+  loginService,
+} from '../services/indexServices.js'
 
-dotenv.config()
-
-const getPlayers = async (req, res) => {
+export const getPlayers = async (req, res) => {
   try {
-    const result = await indexServices.getPlayersService()
+    const result = await getPlayersService()
     res.send(result)
+    throw new Error('Error getting players')
   } catch (e) {
     console.log(e)
-    throw new Error('Error getting players')
   }
 }
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
   const { username, password } = req.body
   try {
-    const result = await indexServices.registerService(username, password)
+    const result = await registerService(username, password)
     if (result === true) {
-      res.send('User already exists.Please login')
-    } else {
-      res.send('Registered successfully')
+      return res.status(409).send('User already exists.Please login')
     }
+    res.send('Registered successfully')
+    throw new Error('Error getting players')
   } catch (e) {
     console.log(e)
-    throw new Error('Error getting players')
   }
 }
 
-const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const { username, password } = req.body
   try {
-    const result = await indexServices.loginService(username, password)
-    if (result === false) {
-      res.send('User does not exists')
-    } else if (result === 0) {
-      res.send('Invalid credentials')
-    } else {
-      res.send(result)
-    }
+    await loginService(username, password, req, res)
   } catch (e) {
     console.log(e)
-    throw new Error('Error logging for user')
   }
-}
-
-export default {
-  register: register,
-  login: login,
-  getPlayers: getPlayers,
 }
