@@ -13,5 +13,4 @@ router.post('/add/fav/players', verifyUser, addFavPlayers)
 
 router.get('/get/fav/players', verifyUser, getFavPlayers)
 
-router.post('/delete/fav/players', verifyUser, deleteFavPlayers)
-
+router.delete('/delete/fav/players', verifyUser, deleteFavPlayers)

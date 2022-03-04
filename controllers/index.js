@@ -7,8 +7,7 @@ import {
 export const getPlayers = async (req, res) => {
   try {
     const result = await getPlayersService()
-    res.send(result)
-    throw new Error('Error getting players')
+    return res.status(200).send(result)
   } catch (e) {
     console.log(e)
   }
@@ -16,22 +15,27 @@ export const getPlayers = async (req, res) => {
 
 export const register = async (req, res) => {
   const { username, password } = req.body
+  if (!username || !password) {
+    return res.status(422).send('Input required')
+  }
   try {
     const result = await registerService(username, password)
     if (result === true) {
       return res.status(409).send('User already exists.Please login')
     }
-    res.send('Registered successfully')
-    throw new Error('Error getting players')
+    return res.status(200).send('Registered successfully')
   } catch (e) {
     console.log(e)
   }
 }
 
-export const login = async (req, res, next) => {
+export const login = async (req, res) => {
   const { username, password } = req.body
+  if (!username || !password) {
+    return res.status(422).send('Input required')
+  }
   try {
-    await loginService(username, password, req, res)
+    await loginService(req, res)
   } catch (e) {
     console.log(e)
   }

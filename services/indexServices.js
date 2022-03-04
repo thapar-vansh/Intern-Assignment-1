@@ -9,47 +9,32 @@ import {
 } from '../database/users.db.js'
 
 export const getPlayersService = async () => {
-  try {
-    const players = await getAllPlayers()
-    return players
-  } catch (e) {
-    console.log(e)
-    throw new Error('Error getting players')
-  }
+  const players = await getAllPlayers()
+  return players
 }
 
 export const registerService = async (username, password) => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await getUserbyUsername(username)
-    if (user && user.length > 0) {
-      return true
-    }
-    await addUserToDb(username, hashedPassword)
-    throw new Error('Error registering')
-  } catch (e) {
-    console.log(e)
+  const hashedPassword = await bcrypt.hash(password, 10)
+  const user = await getUserbyUsername(username)
+  if (user && user.length > 0) {
+    return true
   }
+  await addUserToDb(username, hashedPassword)
 }
 
-export const loginService = async (username, password, req, res) => {
-  const userId = req.user.userId
-  const loginResult = await loginUser(username, password)
-  const user = await checkUser(userId)
-  try {
-    if (loginResult && loginResult.length > 0 && user && user.length) {
-      if (await bcrypt.compare(password, loginResult[0].password)) {
-        const userId = loginResult[0].id
-        const token = generateToken(userId)
-        return res.send(token)
-      } else {
-        return res.status(403).send('Invalid credentials')
-      }
+export const loginService = async (req, res) => {
+  const user = await checkUser(req.user.userId)
+  const loginResult = await loginUser(req.body.username)
+  if (loginResult && loginResult.length > 0 && user != null) {
+    if (await bcrypt.compare(req.body.password, loginResult[0].password)) {
+      const userId = loginResult[0].id
+      const token = generateToken(userId)
+      return res.status(200).send(token)
     } else {
-      return res.status(404).send('User does not exists')
+      return res.status(403).send('Invalid credentials')
     }
-  } catch (e) {
-    console.log(e)
+  } else {
+    return res.status(404).send('User does not exists')
   }
 }
 
@@ -62,5 +47,3 @@ function generateToken(userId) {
   )
   return token
 }
-
-

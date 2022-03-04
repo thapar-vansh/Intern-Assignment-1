@@ -32,5 +32,5 @@ export const checkUser = async (userId) => {
     WHERE id = $1`,
     [userId]
   )
-  return userDetails.rowCount > 0 ? userDetails.rows : []
+  return userDetails.rowCount > 0 ? userDetails.rows : null
 }

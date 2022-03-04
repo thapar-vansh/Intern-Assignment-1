@@ -9,7 +9,7 @@ export const verifyUser = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, config.JWT_PRIVATEKEY)
-    req.user = decoded  
+    req.user = decoded
   } catch (err) {
     console.log(err)
     return res.status(401).send('Invalid token')
@@ -25,12 +25,10 @@ export const verifyAdmin = (req, res, next) => {
     ) {
       next()
     } else {
-      res.status(400).send('You are not authenticated')
+      return res.status(400).send('You are not authenticated')
     }
   } catch (err) {
     console.log(err)
     return res.status(401).send('Invalid credentials')
   }
 }
-
-
