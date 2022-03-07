@@ -11,6 +11,6 @@ export const router = express.Router()
 
 router.post('/add/players', verifyAdmin, addPlayers)
 
-router.post('/update/players', verifyAdmin, updatePlayers)
+router.put('/update/players', verifyAdmin, updatePlayers)
 
 router.delete('/delete/players', verifyAdmin, deletePlayers)

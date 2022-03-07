@@ -6,15 +6,15 @@ import {
   getPlayerByIdFromDb,
 } from '../database/players.db.js'
 
-export const addPlayerService = async (name, country) => {
+export const addPlayer = async (name, country) => {
   await addPlayerToDb(name, country)
 }
 
-export const updatePlayerService = async (id, name, country) => {
+export const updatePlayer = async (id, name, country) => {
   await updatePlayerToDb(id, name, country)
 }
 
-export const deletePlayerService = async (id) => {
+export const deletePlayer = async (id) => {
   await deletePlayerFromDb(id)
 }
 

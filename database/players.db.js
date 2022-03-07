@@ -1,4 +1,5 @@
 import { query } from '../util/database.js'
+import "babel-polyfill"
 
 export const addPlayerToDb = async (name, country) => {
   await query(
@@ -44,7 +45,7 @@ export const getPlayerByIdFromDb = async (id) => {
   return result.rowCount > 0 ? result.rows[0] : null
 }
 
-export const getAllPlayers = async () => {
+export const getPlayersFromDb = async () => {
   const result = await query(`SELECT * FROM players`, [])
   return result.rowCount > 0 ? result.rows : []
 }

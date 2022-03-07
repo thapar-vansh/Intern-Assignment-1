@@ -1,9 +1,10 @@
-import { getPlayerById } from '../services/adminServices.js'
+import { getPlayerById } from '../services/adminService.js'
 import {
-  addFavPlayerService,
-  getFavPlayerService,
-  deleteFavPlayerService,
-} from '../services/userServices.js'
+  addFavPlayer,
+  getFavPlayer,
+  deleteFavPlayer,
+  checkDuplicateFav,
+} from '../services/userService.js'
 
 export const addFavPlayers = async (req, res) => {
   const userId = req.user.userId
@@ -16,23 +17,29 @@ export const addFavPlayers = async (req, res) => {
     if (player === null) {
       return res.status(404).send('Player not found')
     }
-    await addFavPlayerService(userId, id)
+    const duplicatePlayer = await checkDuplicateFav(id, userId)
+    if (duplicatePlayer === true) {
+      return res.status(409).send('Player already in favourites !!')
+    }
+    await addFavPlayer(userId, id)
     return res.status(200).send('Added as favourite')
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }
 
 export const getFavPlayers = async (req, res) => {
   const userId = req.user.userId
   try {
-    const favPlayer = await getFavPlayerService(userId)
-    if (favPlayer && favPlayer.length === 0) {
+    const favPlayer = await getFavPlayer(userId)
+    if (favPlayer?.length === 0) {
       return res.status(404).send('No favourites found')
     }
     return res.status(200).send(favPlayer)
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }
 
@@ -43,13 +50,14 @@ export const deleteFavPlayers = async (req, res) => {
     return res.status(422).send('Input required')
   }
   try {
-    const favPlayer = await getFavPlayerService(userId)
-    if (favPlayer && favPlayer.length === 0) {
+    const favPlayer = await getFavPlayer(userId)
+    if (favPlayer?.length === 0) {
       return res.status(404).send('No favourites found')
     }
-    await deleteFavPlayerService(id, userId)
+    await deleteFavPlayer(id, userId)
     return res.status(200).send('Favourite player deleted successfully')
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-
+import { getUserByUserId } from '../database/users.db.js'
 const config = process.env
 
 export const verifyUser = async (req, res, next) => {
@@ -10,6 +10,10 @@ export const verifyUser = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, config.JWT_PRIVATEKEY)
     req.user = decoded
+    const user = await getUserByUserId(req.user.userId)
+    if(user === null){
+      return res.status(404).send('User not in database. Please register')
+    }
   } catch (err) {
     console.log(err)
     return res.status(401).send('Invalid token')

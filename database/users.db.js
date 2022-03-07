@@ -17,7 +17,7 @@ export const addUserToDb = async (username, hashedPassword) => {
   )
 }
 
-export const loginUser = async (username) => {
+export const getUserByUsername = async (username) => {
   const loginDetails = await query(
     `SELECT id,password FROM users
     WHERE username = $1`,
@@ -26,7 +26,7 @@ export const loginUser = async (username) => {
   return loginDetails.rowCount > 0 ? loginDetails.rows : []
 }
 
-export const checkUser = async (userId) => {
+export const getUserByUserId = async (userId) => {
   const userDetails = await query(
     `SELECT * FROM users
     WHERE id = $1`,

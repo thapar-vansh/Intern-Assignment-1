@@ -28,3 +28,13 @@ export const deleteFavPlayerFromDb = async (id, userId) => {
     [id, userId]
   )
 }
+
+export const checkDuplicateFavFromDb = async (id,userId) => {
+  const duplicateFav = await query(
+    `SELECT player_id
+        FROM favourites
+        WHERE player_id = $1 AND user_id = $2`,
+    [id,userId]
+  )
+  return duplicateFav.rowCount > 0 ? duplicateFav.rows : null
+}

@@ -1,10 +1,10 @@
 import {
-  addPlayerService,
+  addPlayer,
   getPlayerByName,
-  updatePlayerService,
+  updatePlayer,
   getPlayerById,
-  deletePlayerService,
-} from '../services/adminServices.js'
+  deletePlayer,
+} from '../services/adminService.js'
 
 export const addPlayers = async (req, res) => {
   const { name, country } = req.body
@@ -14,12 +14,13 @@ export const addPlayers = async (req, res) => {
   try {
     const player = await getPlayerByName(name)
     if (player === null) {
-      await addPlayerService(name, country)
+      await addPlayer(name, country)
       return res.status(200).send('Player added')
     }
     return res.status(409).send('Player already exists')
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }
 
@@ -33,10 +34,11 @@ export const updatePlayers = async (req, res) => {
     if (player === null) {
       return res.status(404).send('Player not found')
     }
-    await updatePlayerService(id, name, country)
+    await updatePlayer(id, name, country)
     return res.status(200).send('Updated player successfully')
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }
 
@@ -50,9 +52,10 @@ export const deletePlayers = async (req, res) => {
     if (player === null) {
       return res.status(404).send('No player found to delete')
     }
-    await deletePlayerService(id)
+    await deletePlayer(id)
     return res.status(200).send('Player deleted successfully')
   } catch (e) {
     console.log(e)
+    return res.status(400).send('Something went wrong')
   }
 }
