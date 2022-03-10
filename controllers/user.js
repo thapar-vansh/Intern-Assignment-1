@@ -11,6 +11,8 @@ export const addFavPlayers = async (req, res) => {
   const { id } = req.body
   if (!id) {
     return res.status(422).send('Input required')
+  } else if (typeof id === 'string') {
+    return res.status(400).send('Enter valid id')
   }
   try {
     const player = await getPlayerById(id)
