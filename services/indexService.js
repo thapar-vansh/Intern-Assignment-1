@@ -22,7 +22,7 @@ export const registerUser = async (username, password) => {
   await addUserToDb(username, hashedPassword)
 }
 
-export const loginUser = async (username,password) => {
+export const loginUser = async (username, password) => {
   const loginResult = await getUserByUsername(username)
   if (loginResult?.length > 0) {
     if (await bcrypt.compare(password, loginResult[0].password)) {
@@ -30,10 +30,10 @@ export const loginUser = async (username,password) => {
       const token = generateToken(userId)
       return token
     } else {
-      throw new Error ('Invalid credentials')
+      throw new Error('Invalid credentials')
     }
   } else {
-    throw new Error ('User does not exists')
+    throw new Error('User does not exists')
   }
 }
 

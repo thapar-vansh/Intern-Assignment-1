@@ -11,7 +11,7 @@ export const addFavPlayerToDb = async (userId, id) => {
 
 export const getFavPlayersFromDb = async (userId) => {
   const favPlayers = await query(
-    `SELECT player_id,name,country
+    `SELECT name,country
           FROM favourites fv JOIN players pl
           ON pl.id = fv.player_id 
           WHERE user_id = $1`,

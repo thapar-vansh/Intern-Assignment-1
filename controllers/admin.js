@@ -28,6 +28,8 @@ export const updatePlayers = async (req, res) => {
   const { id, name, country } = req.body
   if (!id || !name || !country) {
     return res.status(422).send('Input required')
+  } else if (typeof id === 'string') {
+    return res.status(400).send('Enter valid id')
   }
   try {
     const player = await getPlayerById(id)

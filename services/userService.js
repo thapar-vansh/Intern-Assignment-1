@@ -22,10 +22,9 @@ export const deleteFavPlayer = async (id, userId) => {
 export const checkDuplicateFav = async (id, userId) => {
   const player = await getPlayerById(id)
   const duplicatePlayer = await checkDuplicateFavFromDb(id, userId)
-  if(duplicatePlayer === null ){
-    return 
-  }
-  else if (player.id === duplicatePlayer[0].player_id) {
+  if (duplicatePlayer === null) {
+    return false
+  } else if (player.id === duplicatePlayer[0].player_id) {
     return true
   } else {
     throw new Error('Something went wrong')
