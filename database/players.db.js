@@ -1,5 +1,5 @@
 import { query } from '../util/database.js'
-import "babel-polyfill"
+//import "babel-polyfill"
 
 export const addPlayerToDb = async (name, country) => {
   await query(
